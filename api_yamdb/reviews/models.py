@@ -30,7 +30,7 @@ class User(AbstractUser):
 
 class Review(models.Model):
     title = models.ForeignKey(
-        Title,
+        'Title',
         on_delete=models.CASCADE,
         verbose_name='Название произведения',
         related_name='titles'
@@ -54,7 +54,7 @@ class Review(models.Model):
         ordering = ('pub_date',)
         verbose_name = 'Обзор'
         verbose_name_plural = 'Обзоры'
-    
+
     def __str__(self) -> str:
         return self.title
 
@@ -174,3 +174,11 @@ class TitleGenre(models.Model):
         on_delete=models.CASCADE,
         related_name='titles',
         verbose_name='Жанр')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['title', 'genre'],
+                name='unique_title_genre'
+            )
+        ]
