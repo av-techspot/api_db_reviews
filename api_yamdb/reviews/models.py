@@ -28,7 +28,7 @@ class User(AbstractUser):
         verbose_name_plural = 'Пользователи'
 
 
-class Titles(models.Model):
+class Title(models.Model):
     name = models.CharField(
         verbose_name='Название',
         blank=True,
@@ -41,7 +41,7 @@ class Titles(models.Model):
     description = models.TextField(verbose_name='Описание')
 
     category = models.ForeignKey(
-        'Categories',
+        'Category',
         on_delete=models.SET_DEFAULT,
         related_name='titles',
         blank=True,
@@ -62,7 +62,7 @@ class Titles(models.Model):
         return self.name
 
 
-class Categories(models.Model):
+class Category(models.Model):
     name = models.CharField(
         blank=True,
         max_length=256,
@@ -83,7 +83,7 @@ class Categories(models.Model):
         return self.name
 
 
-class Genres(models.Model):
+class Genre(models.Model):
     name = models.CharField(
         blank=True,
         max_length=256,
@@ -104,14 +104,14 @@ class Genres(models.Model):
         return self.name
 
 
-class TitlesGenres(models.Model):
+class TitleGenre(models.Model):
     title = models.ForeignKey(
-        Titles,
+        Title,
         on_delete=models.CASCADE,
         related_name='genres',
         verbose_name='Произведение')
     genre = models.ForeignKey(
-        Genres,
+        Genre,
         on_delete=models.CASCADE,
         related_name='titles',
         verbose_name='Жанр')
