@@ -29,10 +29,11 @@ class User(AbstractUser):
 
 
 class Review(models.Model):
-    title_id = models.ForeignKey(
+    title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
-        verbose_name='ID Произведения'
+        verbose_name='Название произведения',
+        related_name='titles'
     )
     text = models.TextField()
     author = models.ForeignKey(
@@ -42,12 +43,15 @@ class Review(models.Model):
     )
     score = models.IntegerField(
         models.SET_DEFAULT,
-        default=0
+        default=1
     )
     pub_date = models.DateTimeField(
         auto_now_add=True,
         verbose_name='Дата публикации'
     )
+
+    class Meta:
+        ordering = ('pub_date',)
 
 
 class Category(models.Model):
@@ -62,10 +66,11 @@ class Category(models.Model):
 
 
 class Comment(models.Model):
-    review_id = models.ForeignKey(
+    review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
-        verbose_name='ID ревью'
+        verbose_name='Ревью',
+        related_name='reviews'
     )
     text = models.CharField(
         max_length=255,
@@ -86,7 +91,6 @@ class Comment(models.Model):
 class Genre(models.Model):
     name = models.CharField(
         max_length=50,
-        blank=True,
         verbose_name='Жанр'
     )
     slug = models.SlugField(
