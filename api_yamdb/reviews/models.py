@@ -52,17 +52,11 @@ class Review(models.Model):
 
     class Meta:
         ordering = ('pub_date',)
-
-
-class Category(models.Model):
-    name = models.CharField(
-        max_length=25,
-        verbose_name='Название'
-    )
-    slug = models.SlugField(
-        unique=True,
-        verbose_name='Слаг'
-    )
+        verbose_name = 'Обзор'
+        verbose_name_plural = 'Обзоры'
+    
+    def __str__(self) -> str:
+        return self.title
 
 
 class Comment(models.Model):
@@ -87,13 +81,7 @@ class Comment(models.Model):
         verbose_name='Дата публикации'
     )
 
-
-class Genre(models.Model):
-    name = models.CharField(
-        max_length=50,
-        verbose_name='Жанр'
-    )
-    slug = models.SlugField(
-        unique=True,
-        verbose_name='Слаг'
-    )
+    class Meta:
+        ordering = ('pub_date',)
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
