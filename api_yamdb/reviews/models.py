@@ -29,25 +29,89 @@ class User(AbstractUser):
 
 
 class Titles(models.Model):
-    name = models.CharField(blank=True, max_length=256)
-    year = models.IntegerField(blank=True)
-    description = models.TextField()
+    name = models.CharField(
+        verbose_name='Название',
+        blank=True,
+        max_length=256)
+
+    year = models.IntegerField(
+        verbose_name='Год',
+        blank=True)
+
+    description = models.TextField(verbose_name='Описание')
+
     category = models.ForeignKey(
-        'Categories', on_delete=models.SET_DEFAULT, related_name='titles',
-        blank=True, default='not_chosen')
+        'Categories',
+        on_delete=models.SET_DEFAULT,
+        related_name='titles',
+        blank=True,
+        default='not_chosen',
+        verbose_name='Категория')
 
+    class Meta:
+        ordering = ('id', )
+        verbose_name = 'Произведение'
+        verbose_name_plural = 'Произведения'
+
+    @property
     def average_rating(self) -> int:
-        # Первый способ как из статьи с сайта, тут нужна модель
-        # Reviews
-
-        # rating = Reviews.objects.filter(title=self).aggregate(
-        #     avg_rating=models.Avg('score'))['avg_rating'] or 0
-
-        # Второй способ нашла в документации через "annotate"
-        # "reviews" - это related_name модели Reviews поля title
-        rating = Titles.objects.filter(name=self).annotate(
-            avg_rating=models.Avg('reviews'))['avg_rating'] or 0
-        return int(rating)
+        rating = self.reviews.all().aggregate(models.Avg('score'))
+        return round(rating['score__avg'])
 
     def __str__(self) -> str:
         return self.name
+
+
+class Categories(models.Model):
+    name = models.CharField(
+        blank=True,
+        max_length=256,
+        verbose_name='Название')
+
+    slug = models.SlugField(
+        blank=True,
+        max_length=50,
+        unique=True,
+        verbose_name='Слаг')
+
+    class Meta:
+        ordering = ('id', )
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class Genres(models.Model):
+    name = models.CharField(
+        blank=True,
+        max_length=256,
+        verbose_name='Название')
+
+    slug = models.SlugField(
+        blank=True,
+        max_length=50,
+        unique=True,
+        verbose_name='Слаг')
+
+    class Meta:
+        ordering = ('id', )
+        verbose_name = 'Жанр'
+        verbose_name_plural = 'Жанры'
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class TitlesGenres(models.Model):
+    title = models.ForeignKey(
+        Titles,
+        on_delete=models.CASCADE,
+        related_name='genres',
+        verbose_name='Произведение')
+    genre = models.ForeignKey(
+        Genres,
+        on_delete=models.CASCADE,
+        related_name='titles',
+        verbose_name='Жанр')
