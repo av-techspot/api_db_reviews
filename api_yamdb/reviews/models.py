@@ -63,8 +63,7 @@ class Comment(models.Model):
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
-        verbose_name='Ревью',
-        related_name='reviews'
+        verbose_name='Ревью'
     )
     text = models.CharField(
         max_length=255,
@@ -83,5 +82,6 @@ class Comment(models.Model):
 
     class Meta:
         ordering = ('pub_date',)
+        default_related_name = 'comments'
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
