@@ -2,8 +2,6 @@ from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 from reviews.models import Comment, Review, User
 
-#from .exceptions import UserExist
-
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -21,17 +19,7 @@ class RegistrationDataSerializer(serializers.ModelSerializer):
     def validate_username(self, value):
         if value == 'me':
             raise serializers.ValidationError(f'{value} isn\'t valid username')
-#        if (User.objects.filter(username=value)):
-#            raise UserExist('Такой пользователь уже зарегистрирован.')
         return value
-
-#    def validate(self, data):
-#        if (
-#            data.get('username')
-#            and User.objects.filter(username=data.get('username'))
-#        ):
-#            raise UserExist('Такой пользователь уже зарегистрирован.')
-#        return data
 
 
 class ReviewSerializer(ModelSerializer):

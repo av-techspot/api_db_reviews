@@ -8,7 +8,6 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import User
 
-from .exceptions import UserExist
 from .permissions import IsAdmin
 from .serializers import RegistrationDataSerializer, UserSerializer
 
@@ -19,9 +18,25 @@ def registration(request):
     serializer = RegistrationDataSerializer(data=request.data)
     try:
         serializer.is_valid(raise_exception=True)
-    except UserExist:
-        return Response({}, status=status.HTTP_200_OK)
-    except exceptions.ValidationError:
+    except exceptions.ValidationError as e:
+        if (
+            e.get_codes().get('username') == ['unique']
+            and get_object_or_404(
+                User,
+                username=request.data.get('username')
+            ).email == request.data.get('email')
+        ):
+            user = get_object_or_404(
+                User,
+                username=request.data.get('username'),
+            )
+            user.email_user(
+                subject="Подтвердите регистрацию",
+                message="confirmation_code: "
+                        f"{default_token_generator.make_token(user)}",
+                from_email='a@a.ru',
+            )
+            return Response(request.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     if serializer.is_valid():
         serializer.save()
