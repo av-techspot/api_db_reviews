@@ -1,13 +1,21 @@
 from rest_framework.serializers import ModelSerializer
-from reviews.models import Comment, Review, User
+from reviews.models import Category, Comment, Review, User
+from rest_framework import serializers
 
 
-class UserSerializer(ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
             'username', 'email', 'first_name', 'last_name', 'bio', 'role',
         )
         model = User
+
+
+class CategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = ('name', 'slug')
+        model = Category
 
 
 class ReviewSerializer(ModelSerializer):
