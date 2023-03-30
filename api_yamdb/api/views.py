@@ -1,15 +1,16 @@
 from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404
-from rest_framework import exceptions, status
+from rest_framework import exceptions, filters, mixins, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import AccessToken
-from reviews.models import User
+from reviews.models import Category, Genre, User
 
-from .permissions import IsAdmin
-from .serializers import RegistrationDataSerializer, UserSerializer
+from .permissions import IsAdmin, IsAdminOrReadOnly
+from .serializers import (CategorySerializer, GenreSerializer,
+                          RegistrationDataSerializer, UserSerializer)
 
 
 @api_view(['POST'])
@@ -79,3 +80,55 @@ class UserViewSet(ModelViewSet):
     lookup_field = 'username'
     serializer_class = UserSerializer
     permission_classes = [IsAdmin]
+
+
+class CategoryViewSet(mixins.CreateModelMixin,
+                      mixins.DestroyModelMixin,
+                      mixins.ListModelMixin,
+                      viewsets.GenericViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    lookup_field = 'slug'
+    pagination_class = LimitOffsetPagination
+    filter_backends = (filters.SearchFilter, )
+    search_fields = ('name', )
+    permission_classes = [IsAdminOrReadOnly]
+
+
+class GenreViewSet(mixins.CreateModelMixin,
+                   mixins.DestroyModelMixin,
+                   mixins.ListModelMixin,
+                   viewsets.GenericViewSet):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    lookup_field = 'slug'
+    pagination_class = LimitOffsetPagination
+    filter_backends = (filters.SearchFilter, )
+    search_fields = ('name', )
+    permission_classes = [IsAdminOrReadOnly]
+
+
+class CategoryViewSet(mixins.CreateModelMixin,
+                      mixins.DestroyModelMixin,
+                      mixins.ListModelMixin,
+                      viewsets.GenericViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    lookup_field = 'slug'
+    pagination_class = LimitOffsetPagination
+    filter_backends = (filters.SearchFilter, )
+    search_fields = ('name', )
+    permission_classes = [IsAdminOrReadOnly]
+
+
+class GenreViewSet(mixins.CreateModelMixin,
+                   mixins.DestroyModelMixin,
+                   mixins.ListModelMixin,
+                   viewsets.GenericViewSet):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    lookup_field = 'slug'
+    pagination_class = LimitOffsetPagination
+    filter_backends = (filters.SearchFilter, )
+    search_fields = ('name', )
+    permission_classes = [IsAdminOrReadOnly]
