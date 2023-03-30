@@ -89,7 +89,6 @@ class CategoryViewSet(mixins.CreateModelMixin,
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     lookup_field = 'slug'
-    pagination_class = LimitOffsetPagination
     filter_backends = (filters.SearchFilter, )
     search_fields = ('name', )
     permission_classes = [IsAdminOrReadOnly]
@@ -102,7 +101,6 @@ class GenreViewSet(mixins.CreateModelMixin,
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     lookup_field = 'slug'
-    pagination_class = LimitOffsetPagination
     filter_backends = (filters.SearchFilter, )
     search_fields = ('name', )
     permission_classes = [IsAdminOrReadOnly]
@@ -115,7 +113,6 @@ class CategoryViewSet(mixins.CreateModelMixin,
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     lookup_field = 'slug'
-    pagination_class = LimitOffsetPagination
     filter_backends = (filters.SearchFilter, )
     search_fields = ('name', )
     permission_classes = [IsAdminOrReadOnly]
@@ -128,7 +125,6 @@ class GenreViewSet(mixins.CreateModelMixin,
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     lookup_field = 'slug'
-    pagination_class = LimitOffsetPagination
     filter_backends = (filters.SearchFilter, )
     search_fields = ('name', )
     permission_classes = [IsAdminOrReadOnly]
