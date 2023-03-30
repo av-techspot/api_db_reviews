@@ -9,6 +9,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import User
 
 from .exceptions import UserExist
+from .permissions import IsAdmin
 from .serializers import RegistrationDataSerializer, UserSerializer
 
 
@@ -60,5 +61,6 @@ def get_token(request):
 
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
+    lookup_field = 'username'
     serializer_class = UserSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdmin]
