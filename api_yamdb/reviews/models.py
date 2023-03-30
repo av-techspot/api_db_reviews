@@ -166,3 +166,11 @@ class TitleGenre(models.Model):
         on_delete=models.CASCADE,
         related_name='titles',
         verbose_name='Жанр')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['title', 'genre'],
+                name='unique_title_genre'
+            )
+        ]
