@@ -1,10 +1,9 @@
 from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404
 from rest_framework import exceptions, status
-from rest_framework.decorators import api_view
-from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework.serializers import get_error_detail
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import User
@@ -14,6 +13,7 @@ from .serializers import RegistrationDataSerializer, UserSerializer
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def registration(request):
     serializer = RegistrationDataSerializer(data=request.data)
     try:
@@ -28,17 +28,18 @@ def registration(request):
             User,
             username=serializer.validated_data.get('username'),
         )
-        #user.email_user(
-        #    subject="Подтвердите регистрацию",
-        #    message="confirmation_code: "
-        #            f"{default_token_generator.make_token(user)}",
-        #    from_email='a@a.ru',
-        #)
-        return Response({}, status=status.HTTP_200_OK)
-    return Response({}, status=status.HTTP_400_BAD_REQUEST)
+        user.email_user(
+            subject="Подтвердите регистрацию",
+            message="confirmation_code: "
+                    f"{default_token_generator.make_token(user)}",
+            from_email='a@a.ru',
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def get_token(request):
     if (
         not request.data
@@ -60,4 +61,4 @@ def get_token(request):
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    pagination_class = LimitOffsetPagination
+    permission_classes = [AllowAny]
