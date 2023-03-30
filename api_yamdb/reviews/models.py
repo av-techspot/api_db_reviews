@@ -90,12 +90,9 @@ class Comment(models.Model):
 class Title(models.Model):
     name = models.CharField(
         verbose_name='Название',
-        blank=True,
         max_length=256)
 
-    year = models.IntegerField(
-        verbose_name='Год',
-        blank=True)
+    year = models.IntegerField(verbose_name='Год')
 
     description = models.TextField(verbose_name='Описание')
 
@@ -103,7 +100,6 @@ class Title(models.Model):
         'Category',
         on_delete=models.SET_DEFAULT,
         related_name='titles',
-        blank=True,
         default='not_chosen',
         verbose_name='Категория')
 
@@ -123,12 +119,10 @@ class Title(models.Model):
 
 class Category(models.Model):
     name = models.CharField(
-        blank=True,
         max_length=256,
         verbose_name='Название')
 
     slug = models.SlugField(
-        blank=True,
         max_length=50,
         unique=True,
         verbose_name='Слаг')
@@ -144,12 +138,10 @@ class Category(models.Model):
 
 class Genre(models.Model):
     name = models.CharField(
-        blank=True,
         max_length=256,
         verbose_name='Название')
 
     slug = models.SlugField(
-        blank=True,
         max_length=50,
         unique=True,
         verbose_name='Слаг')
