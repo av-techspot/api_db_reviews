@@ -5,7 +5,7 @@ from .views import (get_token, registration, UserViewSet, CategoryViewSet)
 
 router = SimpleRouter()
 router.register('users', UserViewSet)
-router.register(r'categories', CategoryViewSet)
+router.register('categories', CategoryViewSet)
 
 
 urlpatterns = [
