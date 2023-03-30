@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
-from reviews.models import User
+from rest_framework.serializers import ModelSerializer
+from reviews.models import Comment, Review, User
 
 from .exceptions import UserExist
 
@@ -32,3 +32,19 @@ class RegistrationDataSerializer(serializers.ModelSerializer):
         ):
             raise UserExist('Такой пользователь уже зарегистрирован.')
         return data
+
+
+class ReviewSerializer(ModelSerializer):
+    class Meta:
+        fields = (
+            'title', 'text', 'author', 'score', 'pub_date',
+        )
+        model = Review
+
+
+class CommentSerializer(ModelSerializer):
+    class Meta:
+        fields = (
+            'review', 'text', 'author', 'pub_date',
+        )
+        model = Comment
