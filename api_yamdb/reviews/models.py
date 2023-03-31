@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from .constants import UserRoles
+from .constants import CHAR_LIMITS_REVIEW, UserRoles
 
 
 class User(AbstractUser):
@@ -33,7 +33,7 @@ class Review(models.Model):
         'Title',
         on_delete=models.CASCADE,
         verbose_name='Название произведения',
-        related_name='titles'
+        related_name='reviews'
     )
     text = models.TextField()
     author = models.ForeignKey(
@@ -42,8 +42,8 @@ class Review(models.Model):
         verbose_name='Автор'
     )
     score = models.IntegerField(
-        models.SET_DEFAULT,
-        default=1
+        default=1,
+        verbose_name='Оценка'
     )
     pub_date = models.DateTimeField(
         auto_now_add=True,
@@ -51,19 +51,19 @@ class Review(models.Model):
     )
 
     class Meta:
-        ordering = ('pub_date',)
+        ordering = ('-pub_date',)
         verbose_name = 'Обзор'
         verbose_name_plural = 'Обзоры'
 
     def __str__(self) -> str:
-        return self.title
+        return f'Обзор на {self.title.name}'
 
 
 class Comment(models.Model):
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
-        verbose_name='Ревью'
+        verbose_name='Обзор'
     )
     text = models.CharField(
         max_length=255,
@@ -85,6 +85,9 @@ class Comment(models.Model):
         default_related_name = 'comments'
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
+
+    def __str__(self):
+        return f'Коментарий к {self.review.text[:CHAR_LIMITS_REVIEW]}'
 
 
 class Title(models.Model):
@@ -110,8 +113,9 @@ class Title(models.Model):
 
     @property
     def average_rating(self) -> int:
-        rating = self.reviews.all().aggregate(models.Avg('score'))
-        return round(rating['score__avg'])
+        rating = self.reviews.all().aggregate(
+            models.Avg('score'))['score__avg'] or 0
+        return round(rating)
 
     def __str__(self) -> str:
         return self.name
@@ -168,9 +172,14 @@ class TitleGenre(models.Model):
         verbose_name='Жанр')
 
     class Meta:
+        verbose_name = 'Жанр произведения'
+        verbose_name_plural = 'Жанры произведений'
         constraints = [
             models.UniqueConstraint(
                 fields=['title', 'genre'],
                 name='unique_title_genre'
             )
         ]
+
+    def __str__(self) -> str:
+        return f'{self.title.name}: {self.genre.name}'

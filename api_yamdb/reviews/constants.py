@@ -6,3 +6,6 @@ class UserRoles(TextChoices):
     USER = 'user', _('Пользователь')
     MODERATOR = 'moderator', _('Модератор')
     ADMIN = 'admin', _('Администратор')
+
+
+CHAR_LIMITS_REVIEW = 20
