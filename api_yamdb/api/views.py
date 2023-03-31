@@ -6,11 +6,12 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import AccessToken
-from reviews.models import Category, Genre, User
+from reviews.models import Category, Genre, Title, User
 
 from .permissions import IsAdmin, IsAdminOrReadOnly
 from .serializers import (CategorySerializer, GenreSerializer,
-                          RegistrationDataSerializer, UserSerializer)
+                          RegistrationDataSerializer, TitleSerializer,
+                          UserSerializer)
 
 
 @api_view(['POST'])
@@ -106,25 +107,7 @@ class GenreViewSet(mixins.CreateModelMixin,
     permission_classes = [IsAdminOrReadOnly]
 
 
-class CategoryViewSet(mixins.CreateModelMixin,
-                      mixins.DestroyModelMixin,
-                      mixins.ListModelMixin,
-                      viewsets.GenericViewSet):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    lookup_field = 'slug'
-    filter_backends = (filters.SearchFilter, )
-    search_fields = ('name', )
-    permission_classes = [IsAdminOrReadOnly]
-
-
-class GenreViewSet(mixins.CreateModelMixin,
-                   mixins.DestroyModelMixin,
-                   mixins.ListModelMixin,
-                   viewsets.GenericViewSet):
-    queryset = Genre.objects.all()
-    serializer_class = GenreSerializer
-    lookup_field = 'slug'
-    filter_backends = (filters.SearchFilter, )
-    search_fields = ('name', )
+class TitleViewSet(ModelViewSet):
+    queryset = Title.objects.all().select_related('category')
+    serializer_class = TitleSerializer
     permission_classes = [IsAdminOrReadOnly]
