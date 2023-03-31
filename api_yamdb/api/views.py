@@ -1,10 +1,9 @@
 from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404
 from rest_framework import exceptions, filters, mixins, status, viewsets
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
+from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import Category, Comment, Genre, Review, Title, User
 
@@ -12,7 +11,8 @@ from .permissions import (IsAdmin, IsAdminOrReadOnly,
                           IsAuthorAdminModeratorOrReadOnly)
 from .serializers import (CategorySerializer, CommentSerializer,
                           GenreSerializer, RegistrationDataSerializer,
-                          ReviewSerializer, TitleSerializer, UserSerializer)
+                          ReviewSerializer, TitleSerializer,
+                          UserOwnerProfileSerializer, UserSerializer)
 
 
 @api_view(['POST'])
@@ -77,11 +77,34 @@ def get_token(request):
     return Response(request.data, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserViewSet(ModelViewSet):
+class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     lookup_field = 'username'
     serializer_class = UserSerializer
-    permission_classes = [IsAdmin]
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('username',)
+    http_method_names = ('get', 'post', 'patch', 'delete',)
+    permission_classes = (IsAdmin,)
+
+    @action(
+        methods=('get', 'patch',), detail=False, url_path='me',
+        permission_classes=(IsAuthenticated,),
+        serializer_class=UserOwnerProfileSerializer,
+    )
+    def get_or_update_owner_profile(self, request):
+        if request.method == 'GET':
+            return Response(
+                self.get_serializer(
+                    request.user).data, status=status.HTTP_200_OK
+            )
+        serializer = self.get_serializer(
+            request.user,
+            data=request.data,
+            partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class CategoryViewSet(mixins.CreateModelMixin,
@@ -108,13 +131,13 @@ class GenreViewSet(mixins.CreateModelMixin,
     permission_classes = [IsAdminOrReadOnly]
 
 
-class TitleViewSet(ModelViewSet):
+class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all().select_related('category')
     serializer_class = TitleSerializer
     permission_classes = [IsAdminOrReadOnly]
 
 
-class ReviewViewSet(ModelViewSet):
+class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthorAdminModeratorOrReadOnly]
@@ -124,7 +147,7 @@ class ReviewViewSet(ModelViewSet):
         return title.reviews
 
 
-class CommentViewSet(ModelViewSet):
+class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [IsAuthorAdminModeratorOrReadOnly]
