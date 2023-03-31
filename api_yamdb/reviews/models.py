@@ -34,7 +34,7 @@ class Review(models.Model):
         'Title',
         on_delete=models.CASCADE,
         verbose_name='Название произведения',
-        related_name='titles'
+        related_name='reviews'
     )
     text = models.TextField()
     author = models.ForeignKey(
@@ -115,8 +115,13 @@ class Title(models.Model):
 
     @property
     def average_rating(self) -> int:
-        rating = self.reviews.all().aggregate(models.Avg('score'))
-        return round(rating['score__avg'])
+        try:
+            rating = self.reviews.all().aggregate(
+                models.Avg('score')
+            )
+        except AttributeError:
+            rating = 0
+        return round(rating)
 
     def __str__(self) -> str:
         return self.name
@@ -179,3 +184,6 @@ class TitleGenre(models.Model):
                 name='unique_title_genre'
             )
         ]
+
+    def __str__(self) -> str:
+        return f'{self.title.name}: {self.genre.name}'
