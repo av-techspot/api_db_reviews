@@ -2,16 +2,17 @@ from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404
 from rest_framework import exceptions, filters, mixins, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_simplejwt.tokens import AccessToken
-from reviews.models import Category, Genre, Title, User
+from reviews.models import Category, Comment, Genre, Review, Title, User
 
-from .permissions import IsAdmin, IsAdminOrReadOnly
-from .serializers import (CategorySerializer, GenreSerializer,
-                          RegistrationDataSerializer, TitleSerializer,
-                          UserSerializer)
+from .permissions import (IsAdmin, IsAdminOrReadOnly,
+                          IsAuthorAdminModeratorOrReadOnly)
+from .serializers import (CategorySerializer, CommentSerializer,
+                          GenreSerializer, RegistrationDataSerializer,
+                          ReviewSerializer, TitleSerializer, UserSerializer)
 
 
 @api_view(['POST'])
@@ -111,3 +112,23 @@ class TitleViewSet(ModelViewSet):
     queryset = Title.objects.all().select_related('category')
     serializer_class = TitleSerializer
     permission_classes = [IsAdminOrReadOnly]
+
+
+class ReviewViewSet(ModelViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    permission_classes = [IsAuthorAdminModeratorOrReadOnly]
+
+    def get_queryset(self):
+        title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
+        return title.reviews
+
+
+class CommentViewSet(ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthorAdminModeratorOrReadOnly]
+
+    def get_queryset(self):
+        review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
+        return review.comments
