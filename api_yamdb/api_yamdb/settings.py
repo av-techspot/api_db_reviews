@@ -119,3 +119,5 @@ SIMPLE_JWT = {
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+DISPLAY_TEXT_LIMIT = 10

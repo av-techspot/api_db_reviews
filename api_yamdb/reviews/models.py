@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 from .constants import UserRoles
+from api_yamdb.settings import DISPLAY_TEXT_LIMIT
 
 
 class User(AbstractUser):
@@ -43,7 +44,8 @@ class Review(models.Model):
     )
     score = models.IntegerField(
         models.SET_DEFAULT,
-        default=1
+        default=1,
+        verbose_name='Рейтинг'
     )
     pub_date = models.DateTimeField(
         auto_now_add=True,
@@ -56,7 +58,7 @@ class Review(models.Model):
         verbose_name_plural = 'Обзоры'
 
     def __str__(self) -> str:
-        return self.title
+        return self.text[:DISPLAY_TEXT_LIMIT]
 
 
 class Comment(models.Model):
@@ -85,6 +87,9 @@ class Comment(models.Model):
         default_related_name = 'comments'
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
+
+    def __str__(self) -> str:
+        return self.text[:DISPLAY_TEXT_LIMIT]
 
 
 class Title(models.Model):

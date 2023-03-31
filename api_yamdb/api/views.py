@@ -104,27 +104,3 @@ class GenreViewSet(mixins.CreateModelMixin,
     filter_backends = (filters.SearchFilter, )
     search_fields = ('name', )
     permission_classes = [IsAdminOrReadOnly]
-
-
-class CategoryViewSet(mixins.CreateModelMixin,
-                      mixins.DestroyModelMixin,
-                      mixins.ListModelMixin,
-                      viewsets.GenericViewSet):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    lookup_field = 'slug'
-    filter_backends = (filters.SearchFilter, )
-    search_fields = ('name', )
-    permission_classes = [IsAdminOrReadOnly]
-
-
-class GenreViewSet(mixins.CreateModelMixin,
-                   mixins.DestroyModelMixin,
-                   mixins.ListModelMixin,
-                   viewsets.GenericViewSet):
-    queryset = Genre.objects.all()
-    serializer_class = GenreSerializer
-    lookup_field = 'slug'
-    filter_backends = (filters.SearchFilter, )
-    search_fields = ('name', )
-    permission_classes = [IsAdminOrReadOnly]
