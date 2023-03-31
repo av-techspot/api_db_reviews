@@ -20,3 +20,21 @@ class IsAdmin(BasePermission):
                 or request.user.role == UserRoles.ADMIN
             )
         )
+
+
+class IsAuthorAdminModeratorOrReadOnly(BasePermission):
+    def has_permission(self, request, view):
+        return bool(
+            request.method in SAFE_METHODS or request.user.is_authenticated
+        )
+
+    def has_object_permission(self, request, view, obj):
+        return bool(
+            request.method in SAFE_METHODS
+            or request.user.is_authenticated
+            and (
+                obj.author == request.user
+                or request.user.role == UserRoles.ADMIN
+                or request.user.role == UserRoles.MODERATOR
+            )
+        )
