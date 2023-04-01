@@ -12,9 +12,9 @@ from .permissions import (IsAdmin, IsAdminOrReadOnly,
                           IsAuthorAdminModeratorOrReadOnly)
 from .serializers import (CategorySerializer, CommentSerializer,
                           GenreSerializer, RegistrationDataSerializer,
-                          ReviewSerializer, TitleSerializer,
-                          UserOwnerProfileSerializer, UserSerializer,
-                          TitleGETSerializer, TitlePOSTSerializer)
+                          ReviewSerializer, TitleGETSerializer,
+                          TitlePOSTSerializer, UserOwnerProfileSerializer,
+                          UserSerializer)
 
 
 @api_view(['POST'])
