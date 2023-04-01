@@ -1,5 +1,6 @@
 from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import exceptions, filters, mixins, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
@@ -10,8 +11,8 @@ from reviews.models import Category, Genre, Title, User
 
 from .permissions import IsAdmin, IsAdminOrReadOnly
 from .serializers import (CategorySerializer, GenreSerializer,
-                          RegistrationDataSerializer, TitleSerializer,
-                          UserSerializer)
+                          RegistrationDataSerializer, TitleGETSerializer,
+                          TitlePOSTSerializer, UserSerializer)
 
 
 @api_view(['POST'])
@@ -109,5 +110,12 @@ class GenreViewSet(mixins.CreateModelMixin,
 
 class TitleViewSet(ModelViewSet):
     queryset = Title.objects.all().select_related('category')
-    serializer_class = TitleSerializer
     permission_classes = [IsAdminOrReadOnly]
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('category__slug', 'genre__slug', 'name', 'year')
+
+    def get_serializer_class(self):
+        if self.action in ['list', 'retrieve']:
+            return TitleGETSerializer
+        else:
+            return TitlePOSTSerializer

@@ -97,7 +97,7 @@ class Title(models.Model):
 
     year = models.IntegerField(verbose_name='Год')
 
-    description = models.TextField(verbose_name='Описание')
+    description = models.TextField(verbose_name='Описание', blank=True)
 
     category = models.ForeignKey(
         'Category',
@@ -105,6 +105,11 @@ class Title(models.Model):
         related_name='titles',
         default='not_chosen',
         verbose_name='Категория')
+
+    genre = models.ManyToManyField(
+        'Genre',
+        through='TitleGenre',
+        verbose_name='Жанр')
 
     class Meta:
         ordering = ('id', )
@@ -114,8 +119,8 @@ class Title(models.Model):
     @property
     def average_rating(self) -> int:
         rating = self.reviews.all().aggregate(
-            models.Avg('score'))['score__avg'] or 0
-        return round(rating)
+            models.Avg('score')).get('score__avg')
+        return round(rating) if rating else None
 
     def __str__(self) -> str:
         return self.name
@@ -163,12 +168,10 @@ class TitleGenre(models.Model):
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
-        related_name='genres',
         verbose_name='Произведение')
     genre = models.ForeignKey(
         Genre,
         on_delete=models.CASCADE,
-        related_name='titles',
         verbose_name='Жанр')
 
     class Meta:
