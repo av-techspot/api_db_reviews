@@ -14,6 +14,15 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
 
 
+class UserOwnerProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            'username', 'email', 'first_name', 'last_name', 'bio', 'role',
+        )
+        model = User
+        read_only_fields = ('role',)
+
+
 class RegistrationDataSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('username', 'email',)
@@ -42,7 +51,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
-            'review', 'text', 'author', 'pub_date',
+            'id', 'text', 'author', 'pub_date',
         )
         model = Comment
 
