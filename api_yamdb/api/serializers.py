@@ -1,9 +1,7 @@
 from datetime import date
 
 from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
-from reviews.models import (Category, Comment, Genre, Review, Title,
-                            TitleGenre, User)
+from reviews.models import Category, Comment, Genre, Review, Title, User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -63,7 +61,7 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class TitleGETSerializer(serializers.ModelSerializer):
-    rating = serializers.IntegerField(source='average_rating', read_only=True)
+    rating = serializers.IntegerField(source='average_rating')
     category = CategorySerializer(read_only=True)
     genre = GenreSerializer(many=True, read_only=True)
 
@@ -71,6 +69,15 @@ class TitleGETSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'year', 'rating', 'description', 'category',
                   'genre')
         model = Title
+
+    def validate_year(self, value):
+        year = date.today().year
+        if value > year:
+            raise serializers.ValidationError(
+                'Field "year" is required or field "year" can\'t be greater '
+                f'than current year: {year}'
+            )
+        return value
 
 
 class TitlePOSTSerializer(serializers.ModelSerializer):
@@ -100,24 +107,3 @@ class TitlePOSTSerializer(serializers.ModelSerializer):
                 f'than current year: {year}'
             )
         return value
-
-    def create(self, validated_data):
-        category = validated_data.pop('category')
-        genres = validated_data.pop('genre')
-        title = Title.objects.create(category=category,
-                                     **validated_data)
-        for genre in genres:
-            title.genre.add(genre)
-            TitleGenre.objects.get_or_create(title=title, genre=genre)
-        return title
-
-    def update(self, instance, validated_data):
-        instance.name = validated_data.get('name', instance.name)
-        instance.year = validated_data.get('year', instance.year)
-        instance.description = validated_data.get('description',
-                                                  instance.description)
-        instance.category = validated_data.get('category', instance.category)
-        if validated_data.get('genre') is not None:
-            instance.genre.add(validated_data.get('genre'))
-        instance.save()
-        return instance
