@@ -3,7 +3,11 @@ from datetime import date
 from rest_framework import serializers
 from reviews.models import Category, Comment, Genre, Review, Title, User
 
-from .custom_ser_field import CustomSlugRelatedField
+
+class CustomSlugRelatedField(serializers.SlugRelatedField):
+    def to_representation(self, obj):
+        return {'name': obj.name,
+                'slug': obj.slug}
 
 
 class UserSerializer(serializers.ModelSerializer):
