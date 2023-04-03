@@ -1,6 +1,7 @@
 from datetime import date
 
 from rest_framework import serializers
+
 from reviews.models import (Category, Comment, Genre, Review, Title,
                             TitleGenre, User)
 
@@ -97,30 +98,8 @@ class TitlePOSTSerializer(serializers.ModelSerializer):
 
     def validate_year(self, value):
         year = date.today().year
-        if value > year:
+        if value > year or year <= 0:
             raise serializers.ValidationError(
-                'Field "year" is required or field "year" can\'t be greater '
-                f'than current year: {year}'
+                'Некорректное значение года'
             )
         return value
-
-    def create(self, validated_data):
-        category = validated_data.pop('category')
-        genres = validated_data.pop('genre')
-        title = Title.objects.create(category=category,
-                                     **validated_data)
-        for genre in genres:
-            title.genre.add(genre)
-            TitleGenre.objects.get_or_create(title=title, genre=genre)
-        return title
-
-    def update(self, instance, validated_data):
-        instance.name = validated_data.get('name', instance.name)
-        instance.year = validated_data.get('year', instance.year)
-        instance.description = validated_data.get('description',
-                                                  instance.description)
-        instance.category = validated_data.get('category', instance.category)
-        if validated_data.get('genre') is not None:
-            instance.genre.add(validated_data.get('genre'))
-        instance.save()
-        return instance
