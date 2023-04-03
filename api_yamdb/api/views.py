@@ -13,8 +13,7 @@ from .filters import TitleFilter
 from .permissions import (IsAdmin, IsAdminOrReadOnly,
                           IsAuthorAdminModeratorOrReadOnly)
 from .serializers import (CategorySerializer, CommentSerializer,
-                          GenreSerializer, ReviewSerializer,
-                          TitleGETSerializer, TitlePOSTSerializer,
+                          GenreSerializer, ReviewSerializer, TitleSerializer,
                           UserOwnerProfileSerializer,
                           UserRegistrationSerializer, UserSerializer)
 from .utils import send_mail_confirmation_code
@@ -121,16 +120,11 @@ class GenreViewSet(mixins.CreateModelMixin,
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all().select_related('category').prefetch_related(
         'genre')
+    serializer_class = TitleSerializer
     permission_classes = (IsAdminOrReadOnly, )
     filter_backends = (DjangoFilterBackend, )
     filterset_class = TitleFilter
     http_method_names = ('get', 'post', 'patch', 'delete', )
-
-    def get_serializer_class(self):
-        if self.action in ('list', 'retrieve', ):
-            return TitleGETSerializer
-        else:
-            return TitlePOSTSerializer
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
