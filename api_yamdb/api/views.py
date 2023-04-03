@@ -124,6 +124,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminOrReadOnly, )
     filter_backends = (DjangoFilterBackend, )
     filterset_class = TitleFilter
+    http_method_names = ('get', 'post', 'patch', 'delete', )
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve', ):
