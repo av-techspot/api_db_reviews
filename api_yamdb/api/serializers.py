@@ -1,8 +1,9 @@
 from datetime import date
 
 from rest_framework import serializers
-from reviews.models import (Category, Comment, Genre, Review, Title,
-                            TitleGenre, User)
+from reviews.models import Category, Comment, Genre, Review, Title, User
+
+from .custom_ser_field import CustomSlugRelatedField
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -71,30 +72,16 @@ class GenreSerializer(serializers.ModelSerializer):
         model = Genre
 
 
-class TitleGETSerializer(serializers.ModelSerializer):
+class TitleSerializer(serializers.ModelSerializer):
     rating = serializers.IntegerField(
         source='average_rating', read_only=True,
     )
-    category = CategorySerializer(read_only=True, )
-    genre = GenreSerializer(many=True, read_only=True, )
-
-    class Meta:
-        fields = (
-            'id', 'name', 'year', 'rating', 'description', 'category', 'genre',
-        )
-        model = Title
-
-
-class TitlePOSTSerializer(serializers.ModelSerializer):
-    rating = serializers.IntegerField(
-        source='average_rating', read_only=True,
-    )
-    category = serializers.SlugRelatedField(
+    category = CustomSlugRelatedField(
         queryset=Category.objects.all(),
         slug_field='slug',
         read_only=False,
     )
-    genre = serializers.SlugRelatedField(
+    genre = CustomSlugRelatedField(
         queryset=Genre.objects.all(),
         slug_field='slug',
         read_only=False,
