@@ -41,11 +41,19 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        slug_field='username',
+        read_only=True
+    )
+
     class Meta:
         fields = (
-            'title', 'text', 'author', 'score', 'pub_date',
+            'id', 'text', 'author', 'score', 'pub_date',
         )
         model = Review
+
+    # def validate(self, data):
+     #   user_reviews = self.get_queryset()
 
 
 class CommentSerializer(serializers.ModelSerializer):
