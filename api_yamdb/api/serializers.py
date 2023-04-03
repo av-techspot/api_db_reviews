@@ -1,7 +1,6 @@
 from datetime import date
 
 from rest_framework import serializers
-
 from reviews.models import (Category, Comment, Genre, Review, Title,
                             TitleGenre, User)
 
@@ -54,13 +53,15 @@ class ReviewSerializer(serializers.ModelSerializer):
         )
         model = Review
 
-    # def validate(self, data):
-     #   user_reviews = self.get_queryset()
-
 
 class CommentSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        slug_field='username',
+        read_only=True
+    )
+
     class Meta:
-        fields = ('text', 'author', 'pub_date', )
+        fields = ('id', 'text', 'author', 'pub_date', )
         model = Comment
 
 

@@ -84,7 +84,6 @@ class Comment(models.Model):
     )
     text = models.CharField(
         max_length=256,
-        blank=True,
         verbose_name='Текст комментария',
     )
     author = models.ForeignKey(
