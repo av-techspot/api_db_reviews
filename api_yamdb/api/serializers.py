@@ -42,7 +42,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ('name', 'slug')
+        fields = (
+            'name', 'slug'
+        )
         model = Category
 
 
@@ -53,10 +55,8 @@ class ReviewSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        fields = (
-            'id', 'text', 'author', 'score', 'pub_date',
-        )
         model = Review
+        exclude = ('title', )
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -66,13 +66,15 @@ class CommentSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        fields = ('id', 'text', 'author', 'pub_date', )
         model = Comment
+        exclude = ('review', )
 
 
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ('name', 'slug')
+        fields = (
+            'name', 'slug'
+        )
         model = Genre
 
 
@@ -93,9 +95,7 @@ class TitleSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        fields = (
-            'id', 'name', 'year', 'rating', 'description', 'category', 'genre',
-        )
+        fields = '__all__'
         model = Title
 
     def validate_year(self, value):

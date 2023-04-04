@@ -1,10 +1,10 @@
 from rest_framework.permissions import SAFE_METHODS, BasePermission
-from reviews.constants import UserRoles
+from reviews.models import UserRoles
 
 
 class IsAdminOrReadOnly(BasePermission):
     def has_permission(self, request, view):
-        return bool(
+        return (
             request.method in SAFE_METHODS
             or request.user.is_authenticated
             and request.user.role == UserRoles.ADMIN
@@ -13,7 +13,7 @@ class IsAdminOrReadOnly(BasePermission):
 
 class IsAdmin(BasePermission):
     def has_permission(self, request, view):
-        return bool(
+        return (
             request.user.is_authenticated
             and (
                 request.user.is_superuser
@@ -24,12 +24,12 @@ class IsAdmin(BasePermission):
 
 class IsAuthorAdminModeratorOrReadOnly(BasePermission):
     def has_permission(self, request, view):
-        return bool(
+        return (
             request.method in SAFE_METHODS or request.user.is_authenticated
         )
 
     def has_object_permission(self, request, view, obj):
-        return bool(
+        return (
             request.method in SAFE_METHODS
             or request.user.is_authenticated
             and (
