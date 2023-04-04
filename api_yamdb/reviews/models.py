@@ -3,9 +3,16 @@ from typing import Optional
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
-from .constants import CHAR_LIMITS_REVIEW, UserRoles
+from .constants import CHAR_LIMITS_REVIEW
 from .validators import actual_year
+
+
+class UserRoles(models.TextChoices):
+    USER = 'user', _('Пользователь')
+    MODERATOR = 'moderator', _('Модератор')
+    ADMIN = 'admin', _('Администратор')
 
 
 class User(AbstractUser):
@@ -141,7 +148,7 @@ class Title(models.Model):
     def average_rating(self) -> Optional[int]:
         rating = self.reviews.all().aggregate(
             models.Avg('score')).get('score__avg')
-        return round(rating) if rating else None
+        return None if rating is None else round(rating)
 
     def __str__(self) -> str:
         return self.name
